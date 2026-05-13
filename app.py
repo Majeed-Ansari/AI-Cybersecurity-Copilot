@@ -6,6 +6,7 @@ from utils.log_parser import parse_logs
 from agents.cve_agent import analyze_cve
 from agents.rag_agent import process_document, ask_rag_question
 from pypdf import PdfReader 
+from utils.report_generator import generate_pdf_report
 
 from agents.threat_agent import analyze_threats
 from agents.mitigation_agent import generate_mitigation
@@ -292,8 +293,68 @@ Upload cybersecurity PDFs and ask AI security questions using RAG architecture.
 # INCIDENT REPORT PAGE
 # =========================
 
+# =========================
+# INCIDENT REPORT PAGE
+# =========================
+
 elif page == "Incident Reports":
 
-    st.title("📄 Incident Reports")
+    st.title("📄 AI Incident Report Generator")
 
-    st.info("Incident report module coming soon...")
+    st.markdown("""
+Generate professional SOC incident reports and export them as PDF.
+""")
+
+    # =========================
+    # INCIDENT INPUT
+    # =========================
+
+    incident_text = st.text_area(
+        "Enter Security Incident Details",
+        height=250,
+        placeholder="Paste security incident details here..."
+    )
+
+    # =========================
+    # GENERATE REPORT
+    # =========================
+
+    if st.button("Generate PDF Report"):
+
+        if incident_text.strip() == "":
+
+            st.warning("Please enter incident details.")
+
+        else:
+
+            try:
+
+                # =========================
+                # GENERATE PDF
+                # =========================
+
+                output_path = "incident_report.pdf"
+
+                generate_pdf_report(
+                    incident_text,
+                    output_path
+                )
+
+                st.success("✅ PDF Report Generated Successfully")
+
+                # =========================
+                # DOWNLOAD BUTTON
+                # =========================
+
+                with open(output_path, "rb") as pdf_file:
+
+                    st.download_button(
+                        label="📥 Download Incident Report",
+                        data=pdf_file,
+                        file_name="SentinelAI_Incident_Report.pdf",
+                        mime="application/pdf"
+                    )
+
+            except Exception as e:
+
+                st.error(f"❌ PDF Generation Error: {str(e)}")
