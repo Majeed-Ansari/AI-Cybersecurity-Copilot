@@ -3,7 +3,10 @@ import pandas as pd
 
 from dashboard import show_dashboard
 from utils.log_parser import parse_logs
+
 from agents.threat_agent import analyze_threats
+from agents.mitigation_agent import generate_mitigation
+from agents.incident_agent import generate_incident_report
 
 # =========================
 # PAGE CONFIG
@@ -56,7 +59,10 @@ elif page == "Threat Analysis":
 
         try:
 
-            # Read uploaded log file
+            # =========================
+            # READ LOG FILE
+            # =========================
+
             log_text = uploaded_file.read().decode("utf-8")
 
             # =========================
@@ -76,6 +82,10 @@ elif page == "Threat Analysis":
             # =========================
 
             parsed_df = parse_logs(log_text)
+
+            # =========================
+            # PARSED EVENTS
+            # =========================
 
             st.subheader("🛡️ Parsed Security Events")
 
@@ -110,24 +120,54 @@ elif page == "Threat Analysis":
             )
 
             # =========================
-            # AI THREAT ANALYSIS
+            # MULTI-AGENT AI ANALYSIS
             # =========================
 
-            st.subheader("🧠 AI Threat Intelligence")
+            st.subheader("🤖 Multi-Agent AI Security Analysis")
 
-            if st.button("Analyze Threats with AI"):
+            if st.button("Run AI Security Agents"):
 
-                with st.spinner("AI is analyzing security threats..."):
+                with st.spinner("AI agents are analyzing security threats..."):
 
-                    ai_response = analyze_threats(log_text)
+                    # =========================
+                    # THREAT AGENT
+                    # =========================
 
-                    st.success("AI Analysis Complete")
+                    st.subheader("🧠 Threat Detection Agent")
 
-                    st.markdown(ai_response)
+                    threat_response = analyze_threats(log_text)
+
+                    st.markdown(threat_response)
+
+                    st.markdown("---")
+
+                    # =========================
+                    # MITIGATION AGENT
+                    # =========================
+
+                    st.subheader("🛡️ Mitigation Agent")
+
+                    mitigation_response = generate_mitigation(log_text)
+
+                    st.markdown(mitigation_response)
+
+                    st.markdown("---")
+
+                    # =========================
+                    # INCIDENT REPORT AGENT
+                    # =========================
+
+                    st.subheader("📄 Incident Report Agent")
+
+                    incident_response = generate_incident_report(log_text)
+
+                    st.markdown(incident_response)
+
+                    st.success("✅ Multi-Agent Security Analysis Completed")
 
         except Exception as e:
 
-            st.error(f"Error processing log file: {str(e)}")
+            st.error(f"❌ Error processing log file: {str(e)}")
 
 # =========================
 # CVE PAGE
