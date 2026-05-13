@@ -1,7 +1,13 @@
 import streamlit as st
+import pandas as pd
+
 from dashboard import show_dashboard
 from utils.log_parser import parse_logs
-import pandas as pd
+from agents.threat_agent import analyze_threats
+
+# =========================
+# PAGE CONFIG
+# =========================
 
 st.set_page_config(
     page_title="SentinelAI",
@@ -26,11 +32,16 @@ page = st.sidebar.radio(
 )
 
 # =========================
-# PAGE ROUTING
+# DASHBOARD PAGE
 # =========================
 
 if page == "Dashboard":
+
     show_dashboard()
+
+# =========================
+# THREAT ANALYSIS PAGE
+# =========================
 
 elif page == "Threat Analysis":
 
@@ -43,58 +54,97 @@ elif page == "Threat Analysis":
 
     if uploaded_file is not None:
 
-        log_text = uploaded_file.read().decode("utf-8")
+        try:
 
-        st.subheader("📄 Raw Logs")
+            # Read uploaded log file
+            log_text = uploaded_file.read().decode("utf-8")
 
-        st.text_area(
-            "Log Content",
-            log_text,
-            height=200
-        )
+            # =========================
+            # RAW LOGS
+            # =========================
 
-        # =========================
-        # PARSE LOGS
-        # =========================
+            st.subheader("📄 Raw Logs")
 
-        parsed_df = parse_logs(log_text)
+            st.text_area(
+                "Log Content",
+                log_text,
+                height=200
+            )
 
-        st.subheader("🛡️ Parsed Security Events")
+            # =========================
+            # PARSE LOGS
+            # =========================
 
-        st.dataframe(
-            parsed_df,
-            use_container_width=True
-        )
+            parsed_df = parse_logs(log_text)
 
-        # =========================
-        # THREAT COUNTS
-        # =========================
+            st.subheader("🛡️ Parsed Security Events")
 
-        st.subheader("📊 Threat Summary")
+            st.dataframe(
+                parsed_df,
+                use_container_width=True
+            )
 
-        threat_counts = parsed_df["Threat Type"].value_counts()
+            # =========================
+            # THREAT SUMMARY
+            # =========================
 
-        st.bar_chart(threat_counts)
+            st.subheader("📊 Threat Summary")
 
-        # =========================
-        # SUSPICIOUS IPS
-        # =========================
+            threat_counts = parsed_df["Threat Type"].value_counts()
 
-        suspicious_ips = parsed_df[
-            parsed_df["Threat Type"] != "Normal Activity"
-        ]["IP Address"].value_counts()
+            st.bar_chart(threat_counts)
 
-        st.subheader("🚨 Suspicious IP Activity")
+            # =========================
+            # SUSPICIOUS IPS
+            # =========================
 
-        st.dataframe(
-            suspicious_ips.reset_index(),
-            use_container_width=True
-        )
+            suspicious_ips = parsed_df[
+                parsed_df["Threat Type"] != "Normal Activity"
+            ]["IP Address"].value_counts()
+
+            st.subheader("🚨 Suspicious IP Activity")
+
+            st.dataframe(
+                suspicious_ips.reset_index(),
+                use_container_width=True
+            )
+
+            # =========================
+            # AI THREAT ANALYSIS
+            # =========================
+
+            st.subheader("🧠 AI Threat Intelligence")
+
+            if st.button("Analyze Threats with AI"):
+
+                with st.spinner("AI is analyzing security threats..."):
+
+                    ai_response = analyze_threats(log_text)
+
+                    st.success("AI Analysis Complete")
+
+                    st.markdown(ai_response)
+
+        except Exception as e:
+
+            st.error(f"Error processing log file: {str(e)}")
+
+# =========================
+# CVE PAGE
+# =========================
 
 elif page == "CVE Intelligence":
+
     st.title("🧠 CVE Intelligence")
+
     st.info("CVE intelligence module coming soon...")
 
+# =========================
+# INCIDENT REPORT PAGE
+# =========================
+
 elif page == "Incident Reports":
+
     st.title("📄 Incident Reports")
+
     st.info("Incident report module coming soon...")
