@@ -14,3 +14,4 @@ transformers
 huggingface-hub
 plotly
 langchain-openai
+reportlab
