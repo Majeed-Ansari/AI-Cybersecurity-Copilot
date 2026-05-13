@@ -4,6 +4,8 @@ import pandas as pd
 from dashboard import show_dashboard
 from utils.log_parser import parse_logs
 from agents.cve_agent import analyze_cve
+from agents.rag_agent import process_document, ask_rag_question
+from pypdf import PdfReader 
 
 from agents.threat_agent import analyze_threats
 from agents.mitigation_agent import generate_mitigation
@@ -31,6 +33,7 @@ page = st.sidebar.radio(
         "Dashboard",
         "Threat Analysis",
         "CVE Intelligence",
+        "Security RAG Chatbot",
         "Incident Reports"
     ]
 )
@@ -210,6 +213,80 @@ Search and analyze cybersecurity vulnerabilities using AI-powered threat intelli
                 st.success("✅ CVE Analysis Completed")
 
                 st.markdown(cve_response)
+
+# =========================
+# SECURITY RAG CHATBOT
+# =========================
+
+elif page == "Security RAG Chatbot":
+
+    st.title("🧠 Security RAG Chatbot")
+
+    st.markdown("""
+Upload cybersecurity PDFs and ask AI security questions using RAG architecture.
+""")
+
+    # =========================
+    # PDF UPLOAD
+    # =========================
+
+    uploaded_pdf = st.file_uploader(
+        "Upload Cybersecurity PDF",
+        type=["pdf"]
+    )
+
+    if uploaded_pdf is not None:
+
+        try:
+
+            pdf_reader = PdfReader(uploaded_pdf)
+
+            extracted_text = ""
+
+            for page_pdf in pdf_reader.pages:
+
+                extracted_text += page_pdf.extract_text()
+
+            st.success("✅ PDF Processed Successfully")
+
+            # =========================
+            # PROCESS DOCUMENT
+            # =========================
+
+            with st.spinner("Creating vector embeddings..."):
+
+                process_document(extracted_text)
+
+            st.success("✅ RAG Knowledge Base Created")
+
+        except Exception as e:
+
+            st.error(f"❌ PDF Processing Error: {str(e)}")
+
+    # =========================
+    # QUESTION INPUT
+    # =========================
+
+    question = st.text_input(
+        "Ask Security Question",
+        placeholder="Example: What are SQL injection attacks?"
+    )
+
+    if st.button("Ask AI"):
+
+        if question.strip() == "":
+
+            st.warning("Please enter a question.")
+
+        else:
+
+            with st.spinner("AI is searching cybersecurity knowledge base..."):
+
+                answer = ask_rag_question(question)
+
+                st.success("✅ AI Response Generated")
+
+                st.markdown(answer)
 
 # =========================
 # INCIDENT REPORT PAGE
