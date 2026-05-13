@@ -1,109 +1,190 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import random
+import time
+
+# =========================
+# DASHBOARD
+# =========================
 
 def show_dashboard():
 
-    st.title("🛡️ SentinelAI Security Dashboard")
+    st.title("🛡️ SentinelAI Security Operations Center")
+
+    st.markdown("""
+Real-time AI-powered cybersecurity monitoring dashboard.
+""")
 
     st.markdown("---")
 
     # =========================
-    # TOP METRICS
+    # METRICS
     # =========================
 
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
+
         st.metric(
-            label="Critical Threats",
-            value="12",
-            delta="+3"
+            "Critical Threats",
+            random.randint(5, 20),
+            "+2"
         )
 
     with col2:
+
         st.metric(
-            label="Suspicious IPs",
-            value="48",
-            delta="+10"
+            "Suspicious IPs",
+            random.randint(20, 80),
+            "+5"
         )
 
     with col3:
+
         st.metric(
-            label="Logs Processed",
-            value="15K",
-            delta="+2K"
+            "Logs Processed",
+            f"{random.randint(10,50)}K",
+            "+3K"
         )
 
     with col4:
+
         st.metric(
-            label="Threat Score",
-            value="87%",
-            delta="-2%"
+            "Threat Score",
+            f"{random.randint(70,95)}%",
+            "-1%"
         )
 
     st.markdown("---")
 
     # =========================
-    # THREAT CHART
+    # CHARTS
     # =========================
 
-    threat_data = pd.DataFrame({
-        "Threat Type": [
-            "Malware",
-            "Phishing",
-            "Brute Force",
-            "SQL Injection",
-            "DDoS"
-        ],
-        "Count": [35, 20, 45, 15, 28]
-    })
+    colA, colB = st.columns(2)
 
-    fig = px.bar(
-        threat_data,
-        x="Threat Type",
-        y="Count",
-        title="Detected Threat Categories"
-    )
+    # =========================
+    # BAR CHART
+    # =========================
 
-    st.plotly_chart(fig, use_container_width=True)
+    with colA:
+
+        threat_data = pd.DataFrame({
+            "Threat Type": [
+                "Malware",
+                "Phishing",
+                "Brute Force",
+                "SQL Injection",
+                "DDoS"
+            ],
+            "Count": [35, 20, 45, 15, 28]
+        })
+
+        fig_bar = px.bar(
+            threat_data,
+            x="Threat Type",
+            y="Count",
+            title="Threat Categories"
+        )
+
+        st.plotly_chart(
+            fig_bar,
+            use_container_width=True
+        )
+
+    # =========================
+    # PIE CHART
+    # =========================
+
+    with colB:
+
+        severity_data = pd.DataFrame({
+            "Severity": [
+                "Critical",
+                "High",
+                "Medium",
+                "Low"
+            ],
+            "Count": [15, 30, 25, 10]
+        })
+
+        fig_pie = px.pie(
+            severity_data,
+            names="Severity",
+            values="Count",
+            title="Threat Severity Distribution"
+        )
+
+        st.plotly_chart(
+            fig_pie,
+            use_container_width=True
+        )
 
     st.markdown("---")
 
     # =========================
-    # RECENT ALERTS TABLE
+    # LIVE ATTACK FEED
     # =========================
 
-    alerts_data = pd.DataFrame({
-        "Timestamp": [
+    st.subheader("🚨 Live Threat Feed")
+
+    live_feed = pd.DataFrame({
+        "Time": [
             "10:15 AM",
+            "10:18 AM",
+            "10:22 AM",
             "10:30 AM",
-            "11:00 AM",
-            "11:20 AM"
+            "10:35 AM"
         ],
-        "Threat": [
-            "Brute Force Attack",
-            "Suspicious Login",
+        "Attack Type": [
             "SQL Injection",
-            "Malware Activity"
+            "Malware",
+            "Brute Force",
+            "Phishing",
+            "DDoS"
         ],
         "Severity": [
+            "Critical",
+            "High",
             "High",
             "Medium",
-            "Critical",
-            "High"
+            "Critical"
         ],
         "Status": [
-            "Investigating",
             "Blocked",
-            "Critical",
-            "Resolved"
+            "Investigating",
+            "Mitigated",
+            "Monitoring",
+            "Blocked"
         ]
     })
 
-    st.subheader("🚨 Recent Security Alerts")
-
     st.dataframe(
-        alerts_data,
+        live_feed,
         use_container_width=True
     )
+
+    st.markdown("---")
+
+    # =========================
+    # REAL-TIME STATUS
+    # =========================
+
+    st.subheader("🟢 System Status")
+
+    status_placeholder = st.empty()
+
+    statuses = [
+        "Monitoring network traffic...",
+        "Scanning suspicious IP activity...",
+        "Analyzing malware signatures...",
+        "Detecting brute force attacks...",
+        "AI agents operational..."
+    ]
+
+    for status in statuses:
+
+        status_placeholder.info(status)
+
+        time.sleep(0.5)

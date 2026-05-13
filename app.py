@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import time
 
 from dashboard import show_dashboard
 from utils.log_parser import parse_logs
@@ -11,6 +12,21 @@ from utils.report_generator import generate_pdf_report
 from agents.threat_agent import analyze_threats
 from agents.mitigation_agent import generate_mitigation
 from agents.incident_agent import generate_incident_report
+
+# =========================
+# LOAD CUSTOM CSS
+# =========================
+
+def load_css():
+
+    with open("style.css") as f:
+
+        st.markdown(
+            f"<style>{f.read()}</style>",
+            unsafe_allow_html=True
+        )
+
+load_css()
 
 # =========================
 # PAGE CONFIG
