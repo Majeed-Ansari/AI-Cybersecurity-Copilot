@@ -13,3 +13,4 @@ torch
 transformers
 huggingface-hub
 plotly
+langchain-openai
