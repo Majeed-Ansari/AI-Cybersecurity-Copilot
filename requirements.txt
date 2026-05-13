@@ -12,3 +12,4 @@ tiktoken
 torch
 transformers
 huggingface-hub
+plotly
