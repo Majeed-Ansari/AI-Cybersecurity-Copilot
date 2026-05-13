@@ -3,6 +3,7 @@ import pandas as pd
 
 from dashboard import show_dashboard
 from utils.log_parser import parse_logs
+from agents.cve_agent import analyze_cve
 
 from agents.threat_agent import analyze_threats
 from agents.mitigation_agent import generate_mitigation
@@ -170,14 +171,45 @@ elif page == "Threat Analysis":
             st.error(f"❌ Error processing log file: {str(e)}")
 
 # =========================
-# CVE PAGE
+# CVE INTELLIGENCE PAGE
 # =========================
 
 elif page == "CVE Intelligence":
 
-    st.title("🧠 CVE Intelligence")
+    st.title("🧠 CVE Intelligence System")
 
-    st.info("CVE intelligence module coming soon...")
+    st.markdown("""
+Search and analyze cybersecurity vulnerabilities using AI-powered threat intelligence.
+""")
+
+    # =========================
+    # CVE INPUT
+    # =========================
+
+    cve_id = st.text_input(
+        "Enter CVE ID",
+        placeholder="Example: CVE-2024-3094"
+    )
+
+    # =========================
+    # ANALYZE BUTTON
+    # =========================
+
+    if st.button("Analyze CVE"):
+
+        if cve_id.strip() == "":
+
+            st.warning("Please enter a valid CVE ID.")
+
+        else:
+
+            with st.spinner("AI is analyzing CVE intelligence..."):
+
+                cve_response = analyze_cve(cve_id)
+
+                st.success("✅ CVE Analysis Completed")
+
+                st.markdown(cve_response)
 
 # =========================
 # INCIDENT REPORT PAGE
